@@ -1,16 +1,3 @@
-// Copyright 2016 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 
 'use strict';
 
@@ -22,6 +9,12 @@ const express = require('express');
 const Multer = require('multer');
 const bodyParser = require('body-parser');
 const Clarifai = require('clarifai');
+
+const PORT = process.env.PORT || 8090;
+
+//////// Sequelize db ////////
+// Requiring our models for syncing
+var db = require("./SequelizeModels");
 
 //////// Clarifai Stuff ////////
 const clarifai = new Clarifai.App({
@@ -45,13 +38,6 @@ async function predictImage(url) {
     
   // });
 };
-// clarifai.models.initModel({id: Clarifai.GENERAL_MODEL, version: "aa7f35c01e0642fda5cf400f543e7c40"})
-// .then(generalModel => {
-//     return generalModel.predict("@@sampleTrain");
-// })
-// .then(response => {
-//     var concepts = response['outputs'][0]['data']['concepts']
-// })
 
 //////// GOOGLE Stuff ////////
 // By default, the client will authenticate using the service account file
@@ -66,7 +52,8 @@ const storage = new Storage();
 
 const app = express();
 app.set('view engine', 'pug');
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Multer is required to process file uploads and make them available via
 // req.files.
@@ -150,11 +137,14 @@ app.post('/pic/upload/profile', multer.single('file'), (req, res, next) => {
   blobStream.end(req.file.buffer);
 });
 
-const PORT = process.env.PORT || 8090;
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-  console.log('Press Ctrl+C to quit.');
+//Routes
+require("./routes/api-sequelize-routes.js")(app);
+
+db.sequelize.sync({ force: false }).then(function() {
+  app.listen(PORT, () => {
+    console.log(`App running on port ${PORT}!`);
+    console.log('Press Ctrl+C to quit.');
+  });
 });
-// [END gae_storage_app]
 
 module.exports = app;
