@@ -3,23 +3,20 @@ module.exports = function (sequelize, DataTypes) {
         description: {
             type: DataTypes.TEXT,
             allowNull: true,
-            defaultValue: ""
+            len: [1]
         },
         image: {
             type: DataTypes.STRING,
             allowNull: true,
-            defaultValue: "http://foo.com",
-            // validate: {
-            //     isUrl: true
-            // }
+            unique: true,
+            validate: {
+                isUrl: true
+            }
         },
         recipe: {
             type: DataTypes.TEXT,
             allowNull: true,
-            defaultValue: "",
-            validate: {
-                max: 1000
-              }
+            len: [1]
         }
 
     });
@@ -29,27 +26,27 @@ module.exports = function (sequelize, DataTypes) {
         // A Tasks can't be created without an Author due to the foreign key constraint
         Post.belongsTo(models.User, {
             foreignKey: {
-                allowNull: false
+                allowNull: true
             }
         });
         Post.belongsToMany(models.User, { through: "Bookmark" });
         Post.hasMany(models.Ingredient, {
             onDelete: "cascade",
             foreignKey: {
-                allowNull: true
+                allowNull: false
               }
         });
         Post.hasMany(models.Comment, {
             onDelete: "cascade",
             foreignKey: {
-                allowNull: true
+                allowNull: false
               }
         });
         
         Post.hasOne(models.Nutrition, {
             onDelete: "cascade",
             foreignKey: {
-                allowNull: true
+                allowNull: false
               }
         })
 
