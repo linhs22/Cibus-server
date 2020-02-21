@@ -2,7 +2,8 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.bulkInsert('Posts', [{
+    return queryInterface.bulkInsert('Posts', [
+      {
         description: "Steak Sandwich",
         image: "https://www.foxvalleyfoodie.com/wp-content/uploads/2018/07/steak-sandwich-feature.jpg",
         recipe: "add bread and steak",
@@ -90,9 +91,6 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      
-      
-      
     ], {});
   },
 

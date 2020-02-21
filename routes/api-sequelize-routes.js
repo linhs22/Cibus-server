@@ -92,22 +92,61 @@ module.exports = function(app) {
           blobStream.end(req.file.buffer);
     });
 
-    app.get("/api/posts/:userid/:number", (req, res) => {
-        db.Post.findAll({
+    // app.get("/api/posts/:userid/:number", (req, res) => {
+    //     console.log("posts");
+    //     db.Post.findAll({
+    //         where: {
+    //             UserId: req.params.userid
+    //         },
+    //         limit: parseInt(req.params.number),
+    //         order: [['createdAt', 'DESC']],
+    //         include: [{model: db.User}]
+    //     })
+    //     .then(posts => {
+    //         res.json(posts)
+    //     })
+    //     .catch(err => {
+    //         console.log(err);
+    //         res.status(400);
+    //         res.json(err);
+    //     });
+    // });
+
+    app.get("/api/posts/followers/:userid", (req, res) => {
+        console.log(req.params.userid);
+        db.User.findOne({
             where: {
-                UserId: req.params.userid
+                id: req.params.userid
             },
-            limit: parseInt(req.params.number),
-            order: [['createdAt', 'DESC']]
+            include:[
+                {model:db.User,
+                as: "followerId",
+                include:db.Post
+            }
+            ]
         })
-        .then(posts => {
-            res.json(posts)
+        // db.Followers.findAll({
+        //     where: {
+        //         followerUserId: parseInt(req.params.userid)
+                
+        //     },
+        //     include: [{
+        //         model: db.Post
+        //     }]
+        //     // include: [{
+        //     //     model: db.Posts,
+        //     //     where: {
+        //     //         UserId: 1
+        //     //     }}
+        //     // ]
+        // })
+        .then(results => {
+            res.json(results);
         })
         .catch(err => {
-            console.log(err);
+            throw err;
             res.status(400);
-            res.json(err);
-        });
+        })
     });
 
     app.get("/api/users/:username/:number", (req, res) => {
@@ -200,6 +239,4 @@ module.exports = function(app) {
     
 
     });
-
-
 };
