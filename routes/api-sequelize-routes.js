@@ -113,13 +113,39 @@ module.exports = function(app) {
     // });
 
     app.get("/api/posts/followers/:userid", (req, res) => {
-        console.log("followers");
-        console.log(db);
-        db.Follower.findAll({
-            // where: {
-            //     user_id: req.params.userid
-            // },
-            // include: [{model: db.Post, where: {users_id: db.Follower.follower_id}}]
+        console.log(req.params.userid);
+        db.User.findOne({
+            where: {
+                id: req.params.userid
+            },
+            include:[
+                {model:db.User,
+                as: "followerId",
+                include:db.Post
+            }
+            ]
+        })
+        // db.Followers.findAll({
+        //     where: {
+        //         followerUserId: parseInt(req.params.userid)
+                
+        //     },
+        //     include: [{
+        //         model: db.Post
+        //     }]
+        //     // include: [{
+        //     //     model: db.Posts,
+        //     //     where: {
+        //     //         UserId: 1
+        //     //     }}
+        //     // ]
+        // })
+        .then(results => {
+            res.json(results);
+        })
+        .catch(err => {
+            throw err;
+            res.status(400);
         })
     });
 
@@ -132,8 +158,6 @@ module.exports = function(app) {
             order: [['username', 'DESC']]
         })
     })
-
-
 
     app.delete("/post/:post", (req, res) => {
         console.log(req.params.post);
@@ -215,6 +239,4 @@ module.exports = function(app) {
     
 
     });
-
-
 };

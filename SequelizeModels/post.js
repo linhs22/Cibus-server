@@ -8,7 +8,7 @@ module.exports = function (sequelize, DataTypes) {
         image: {
             type: DataTypes.STRING,
             allowNull: true,
-            unique: true,
+            // unique: true,
             validate: {
                 isUrl: true
             }

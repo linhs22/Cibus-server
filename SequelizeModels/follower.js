@@ -1,5 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-    var Follower = sequelize.define("Follower", {});
+    var Follower = sequelize.define("Followers", {});
 
     return Follower;
 };
