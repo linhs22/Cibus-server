@@ -34,6 +34,62 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
+      {
+        description: "Steak (not a sandwich)",
+        image: "https://www.foxvalleyfoodie.com/wp-content/uploads/2018/07/steak-sandwich-feature.jpg",
+        recipe: "remove bread, and add steak",
+        UserId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        description: "Steak Salad",
+        image: "https://www.foxvalleyfoodie.com/wp-content/uploads/2018/07/steak-sandwich-feature.jpg",
+        recipe: "add lots of lettuce, eggs, and steak",
+        UserId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        description: "Impossible Steak",
+        image: "https://www.foxvalleyfoodie.com/wp-content/uploads/2018/07/steak-sandwich-feature.jpg",
+        recipe: "add lots of questionable stuff that looks like steak",
+        UserId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        description: "Jamba Juice Juicebox",
+        image: "https://www.foxvalleyfoodie.com/wp-content/uploads/2018/07/steak-sandwich-feature.jpg",
+        recipe: "2 bananas, 4 strawberries, 9 apples",
+        UserId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        description: "Applesauce",
+        image: "https://www.foxvalleyfoodie.com/wp-content/uploads/2018/07/steak-sandwich-feature.jpg",
+        recipe: "apples, mushed and cooked to perfection",
+        UserId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        description: "Paolo Surprise",
+        image: "https://www.foxvalleyfoodie.com/wp-content/uploads/2018/07/steak-sandwich-feature.jpg",
+        recipe: "made by Paolo, not from him",
+        UserId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        description: "Vegan Bacon",
+        image: "https://www.foxvalleyfoodie.com/wp-content/uploads/2018/07/steak-sandwich-feature.jpg",
+        recipe: "Smoked strips of grade C cow leather",
+        UserId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
       
       
       
