@@ -92,22 +92,35 @@ module.exports = function(app) {
           blobStream.end(req.file.buffer);
     });
 
-    app.get("/api/posts/:userid/:number", (req, res) => {
-        db.Post.findAll({
-            where: {
-                UserId: req.params.userid
-            },
-            limit: parseInt(req.params.number),
-            order: [['createdAt', 'DESC']]
+    // app.get("/api/posts/:userid/:number", (req, res) => {
+    //     console.log("posts");
+    //     db.Post.findAll({
+    //         where: {
+    //             UserId: req.params.userid
+    //         },
+    //         limit: parseInt(req.params.number),
+    //         order: [['createdAt', 'DESC']],
+    //         include: [{model: db.User}]
+    //     })
+    //     .then(posts => {
+    //         res.json(posts)
+    //     })
+    //     .catch(err => {
+    //         console.log(err);
+    //         res.status(400);
+    //         res.json(err);
+    //     });
+    // });
+
+    app.get("/api/posts/followers/:userid", (req, res) => {
+        console.log("followers");
+        console.log(db);
+        db.Follower.findAll({
+            // where: {
+            //     user_id: req.params.userid
+            // },
+            // include: [{model: db.Post, where: {users_id: db.Follower.follower_id}}]
         })
-        .then(posts => {
-            res.json(posts)
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(400);
-            res.json(err);
-        });
     });
 
     app.get("/api/users/:username/:number", (req, res) => {
@@ -119,6 +132,8 @@ module.exports = function(app) {
             order: [['username', 'DESC']]
         })
     })
+
+
 
     app.delete("/post/:post", (req, res) => {
         console.log(req.params.post);
