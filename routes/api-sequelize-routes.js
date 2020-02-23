@@ -93,7 +93,7 @@ module.exports = function(app) {
     });
 
     app.get("/api/posts/:userid/:number", (req, res) => {
-        console.log("posts");
+
         db.Post.findAll({
             where: {
                 UserId: req.params.userid
@@ -237,4 +237,5 @@ module.exports = function(app) {
     
 
     });
+
 };
