@@ -93,33 +93,8 @@ module.exports = function(app) {
     });
 
     app.get("/api/posts/:userid/:number", (req, res) => {
-<<<<<<< HEAD
-        db.Post.findAll({
-            where: {
-                UserId: req.params.userid
-            },
-            limit: parseInt(req.params.number),
-            order: [['createdAt', 'DESC']],
-            include: [{model: db.User}]
-        })
-        .then(posts => {
-            res.json(posts)
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(400);
-            res.json(err);
-        });
-    });
 
-
-    app.get("/api/posts/followers/:userid", (req, res) => {
-        console.log(req.params.userid);
-        db.User.findOne({
-=======
-        console.log("posts");
         db.Post.findAll({
->>>>>>> 118f34b413121731c0f557cdb7a68fd184ff6c7c
             where: {
                 UserId: req.params.userid
             },
@@ -166,7 +141,6 @@ module.exports = function(app) {
             res.status(400).send(err);
         })
     });
-
 
     app.get("/api/users/:username/:number", (req, res) => {
         db.User.findAll({
