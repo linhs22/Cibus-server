@@ -15,7 +15,7 @@ async function getFoodInfo(res) {
 
     const response = await axios.post('https://trackapi.nutritionix.com/v2/natural/nutrients', data, { headers: headers })
     // console.log(response.data.foods)
-    return response.data.foods
+    return response.data
 
   } catch (err) {
     console.log(err);
