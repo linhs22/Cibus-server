@@ -33,8 +33,9 @@ app.get('/', (req, res) => {
 
 //Routes
 require("./routes/api-sequelize-routes.js")(app);
+require("./routes/api-nutritionix-routes.js")(app);
 
-db.sequelize.sync({ force: false }).then(function() {
+db.sequelize.sync({ force: false}).then(function() {
   app.listen(PORT, () => {
     console.log(`App running on port ${PORT}!`);
     console.log('Press Ctrl+C to quit.');
