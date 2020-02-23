@@ -92,60 +92,53 @@ module.exports = function(app) {
           blobStream.end(req.file.buffer);
     });
 
-    // app.get("/api/posts/:userid/:number", (req, res) => {
-    //     console.log("posts");
-    //     db.Post.findAll({
-    //         where: {
-    //             UserId: req.params.userid
-    //         },
-    //         limit: parseInt(req.params.number),
-    //         order: [['createdAt', 'DESC']],
-    //         include: [{model: db.User}]
-    //     })
-    //     .then(posts => {
-    //         res.json(posts)
-    //     })
-    //     .catch(err => {
-    //         console.log(err);
-    //         res.status(400);
-    //         res.json(err);
-    //     });
-    // });
-
-    app.get("/api/posts/followers/:userid", (req, res) => {
-        console.log(req.params.userid);
-        db.User.findOne({
+    app.get("/api/posts/:userid/:number", (req, res) => {
+        console.log("posts");
+        db.Post.findAll({
             where: {
-                id: req.params.userid
+                UserId: req.params.userid
             },
-            include:[
-                {model:db.User,
-                as: "followerId",
-                include:db.Post
-            }
-            ]
+            limit: parseInt(req.params.number),
+            order: [['createdAt', 'DESC']],
+            include: [{model: db.User}]
         })
-        // db.Followers.findAll({
-        //     where: {
-        //         followerUserId: parseInt(req.params.userid)
-                
-        //     },
-        //     include: [{
-        //         model: db.Post
-        //     }]
-        //     // include: [{
-        //     //     model: db.Posts,
-        //     //     where: {
-        //     //         UserId: 1
-        //     //     }}
-        //     // ]
-        // })
-        .then(results => {
-            res.json(results);
+        .then(posts => {
+            res.json(posts)
         })
         .catch(err => {
-            throw err;
+            console.log(err);
             res.status(400);
+            res.json(err);
+        });
+    });
+
+    //Populate homepage
+    app.get("/api/followers/:userid/:offset", (req, res) => {
+        db.Followers.findAll({
+            where: {
+                followerUserId: parseInt(req.params.userid)
+            }
+        })
+        .then(results => {
+            var followersArray = results.map(result => result.followerId);
+            db.Post.findAll({
+                offset: parseInt(req.params.offset),
+                limit: 1,
+                where: {
+                    UserId: followersArray
+                },
+                order: [['createdAt', 'DESC']],
+                include: [{model: db.User}]
+            })
+            .then(results=> {
+                res.json(results);
+            })
+            .catch(err => {
+                res.status(400).send(err);
+            })
+        })
+        .catch(err => {
+            res.status(400).send(err);
         })
     });
 
@@ -183,6 +176,7 @@ module.exports = function(app) {
         return;
         }
         // Create post in db to get id to reference
+        console.log("Hi!");
         db.Post.create(req.body)
         .then(postInfo => {
             var postId = postInfo.dataValues.id;
@@ -210,11 +204,15 @@ module.exports = function(app) {
                     }
                 })
                 .then(() => {
-                    concepts.push({imageUrl: publicUrl});
-                    console.log(concepts);
+                    var results = {
+                        concepts: concepts,
+                        imageUrl: publicUrl
+                    }
+                    //concepts.push({imageUrl: publicUrl});
+                    console.log(results);
+                    res.status(200).send(results);
                 })
-                .then(() =>{
-                    res.status(200).send(concepts);
+                .then(() => {
                 })
                 .catch(err => {
                     console.log(err);
