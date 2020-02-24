@@ -1,6 +1,7 @@
 const axios = require('axios');
 
-async function getFoodInfo(res) {
+async function getFoodInfo(data) {
+  console.log(data);
   try {
     headers = {
       'x-app-id': "651c4545",
@@ -9,8 +10,8 @@ async function getFoodInfo(res) {
       'x-remote-user-id': 0
     }
     var data = {
-      query: "2 chicken 1 broccoli",
-      aggregate: "2 chicken 1 broccoli"
+      query: data,
+      aggregate: data
     };
 
     const response = await axios.post('https://trackapi.nutritionix.com/v2/natural/nutrients', data, { headers: headers })
@@ -19,8 +20,6 @@ async function getFoodInfo(res) {
 
   } catch (err) {
     console.log(err);
-    res.status(400);
-    res.json(err);
   }
 }
 
