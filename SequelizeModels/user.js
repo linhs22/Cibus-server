@@ -71,7 +71,7 @@ module.exports = function (sequelize, DataTypes) {
     User.belongsToMany(models.User, { through: "Followers" , as: 'followerUserId',foreignKey:"followerUserId"});
     User.belongsToMany(models.User, { through: "Followers", as: 'followerId',foreignKey:"followerId"});
 
-    User.belongsToMany(models.Post, { through: "Bookmark"});
+    User.belongsToMany(models.Post, {as:"Bookmarked", through: "Bookmark"});
     
   };
   return User;

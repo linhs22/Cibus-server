@@ -29,7 +29,7 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true
             }
         });
-        Post.belongsToMany(models.User, { through: "Bookmark" });
+        Post.belongsToMany(models.User, {as:"Bookmarker",  through: "Bookmark" });
         Post.hasMany(models.Ingredient, {
             onDelete: "cascade",
             foreignKey: {
