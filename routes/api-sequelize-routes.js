@@ -1,13 +1,8 @@
 var db = require("../SequelizeModels");
 const { format } = require('util');
 const Multer = require('multer');
-<<<<<<< HEAD
 const { Storage } = require('@google-cloud/storage');
 const { predictImage } = require("../API/clarifai-api");
-=======
-const {Storage} = require('@google-cloud/storage');
-const {predictImage} = require("../API/clarifai-api");
->>>>>>> development
 const Op = db.Sequelize.Op;
 
 
