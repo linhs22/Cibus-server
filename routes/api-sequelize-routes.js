@@ -1,8 +1,10 @@
 var db = require("../SequelizeModels");
 const { format } = require('util');
 const Multer = require('multer');
-const { Storage } = require('@google-cloud/storage');
-const { predictImage } = require("../API/clarifai-api");
+const {Storage} = require('@google-cloud/storage');
+const {predictImage} = require("../API/clarifai-api");
+const Op = db.Sequelize.Op;
+
 
 // Multer is required to process file uploads and make them available via
 // req.files.
@@ -114,6 +116,23 @@ module.exports = function (app) {
             });
     });
 
+    app.get("/api/myposts/:userid", (req, res) => {
+        db.Post.findAll({
+            where: {
+                UserId: req.params.userid
+            },
+            order: [['createdAt', 'DESC']]
+        })
+        .then(posts => {
+            console.log(posts)
+            res.json(posts)
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(400);
+            res.json(err);
+        });
+    });
 
     //Populate homepage
     app.get("/api/followers/:userid/:offset", (req, res) => {
@@ -122,27 +141,25 @@ module.exports = function (app) {
                 followerUserId: parseInt(req.params.userid)
             }
         })
-            .then(results => {
-                var followersArray = results.map(result => result.followerId);
-                db.Post.findAll({
-                    offset: parseInt(req.params.offset),
-                    limit: 1,
-                    where: {
-                        UserId: followersArray
-                    },
-                    order: [['createdAt', 'DESC']],
-                    include: [{ model: db.User }]
-                })
-                    .then(results => {
-                        res.json(results);
-                    })
-                    .catch(err => {
-                        res.status(400).send(err);
-                    })
+        .then(results => {
+            var followersArray = results.map(result => result.followerId);
+            db.Post.findAll({
+                offset: parseInt(req.params.offset),
+                limit:  2,
+                where: {
+                    UserId: followersArray
+                },
+                order: [['createdAt', 'DESC']],
+                include: [{model: db.User}, {model: db.Comment}]
+            })
+            .then(results=> {
+                console.log(results)
+                res.json(results);
             })
             .catch(err => {
                 res.status(400).send(err);
             })
+        });
     });
 
     // Route to get all users
@@ -154,7 +171,14 @@ module.exports = function (app) {
             limit: parseInt(req.params.usernumber),
             order: [['username', 'DESC']]
         })
-    })
+        .then(results=> {
+            console.log(results)
+            res.json(results);
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        });
+    });
 
     // route to delete post
     app.delete("/post/:post", (req, res) => {
@@ -173,6 +197,32 @@ module.exports = function (app) {
                 res.json(err);
             });
     });
+
+    app.get("/searchpost/:search/:number", (req, res) => {
+        console.log("Hiease")
+        db.Post.findAll({
+            where: {
+                //description: {[Op.like]: `%${req.params.search}%`},
+                [Op.or]: [
+                    {
+                      description: {[Op.like]: `%${req.params.search}%`}
+                    },
+                    {
+                      recipe: {[Op.like]: `%${req.params.search}%`}
+                    }
+                  ]
+            },
+            limit: parseInt(req.params.number),
+            order: [['createdAt', 'DESC']]
+        })
+        .then(results=> {
+            console.log(results)
+            res.json(results);
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        })
+    })
 
     // Process the FOOD file upload and upload to Google Cloud Storage.
     app.post('/post/upload', multer.single('image'), (req, res, next) => {
