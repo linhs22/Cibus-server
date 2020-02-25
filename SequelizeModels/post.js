@@ -8,7 +8,6 @@ module.exports = function (sequelize, DataTypes) {
         image: {
             type: DataTypes.STRING,
             allowNull: true,
-            // unique: true,
             validate: {
                 isUrl: true
             }
@@ -17,6 +16,10 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.TEXT,
             allowNull: true,
             len: [1]
+        },
+        location: {
+            type: DataTypes.STRING,
+            allowNull: true,
         }
 
     });

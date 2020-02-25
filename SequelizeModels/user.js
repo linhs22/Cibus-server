@@ -49,7 +49,14 @@ module.exports = function (sequelize, DataTypes) {
       validate: {
         isUrl: true
       }
+    },
+
+    aboutMe: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      len: [1]
     }
+
   });
 
   User.associate = function (models) {
@@ -58,21 +65,21 @@ module.exports = function (sequelize, DataTypes) {
     User.hasMany(models.Post, {
       foreignKey: {
         allowNull: true
-    }
-      
+      }
+
     });
     User.hasMany(models.Comment, {
       foreignKey: {
         allowNull: true
-    }  
+      }
     });
-    
-    // junction table with follower table
-    User.belongsToMany(models.User, { through: "Followers" , as: 'followerUserId',foreignKey:"followerUserId"});
-    User.belongsToMany(models.User, { through: "Followers", as: 'followerId',foreignKey:"followerId"});
 
-    User.belongsToMany(models.Post, { through: "Bookmark"});
-    
+    // junction table with follower table
+    User.belongsToMany(models.User, { through: "Followers", as: 'followerUserId', foreignKey: "followerUserId" });
+    User.belongsToMany(models.User, { through: "Followers", as: 'followerId', foreignKey: "followerId" });
+
+    User.belongsToMany(models.Post, { through: "Bookmark" });
+
   };
   return User;
 };
