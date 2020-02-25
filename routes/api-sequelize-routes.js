@@ -156,12 +156,39 @@ module.exports = function (app) {
             })
     });
 
+    
+    app.get("/searchpost/:search/:number", (req, res) => {
+        console.log("Hiease")
+        db.Post.findAll({
+            where: {
+                //description: {[Op.like]: `%${req.params.search}%`},
+                [Op.or]: [
+                    {
+                      description: {[Op.like]: `%${req.params.search}%`}
+                    },
+                    {
+                      recipe: {[Op.like]: `%${req.params.search}%`}
+                    }
+                  ]
+            },
+            limit: parseInt(req.params.number),
+            order: [['createdAt', 'DESC']]
+        })
+        .then(results=> {
+            console.log(results)
+            res.json(results);
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        })
+    })
+
     // Route to get all users
     app.get("/api/users/:username/:number", (req, res) => {
         console.log(req.params)
         db.User.findAll({
             where: {
-                UserId: req.params.username
+                username: {[Op.like]: `${req.params.username}%`}
             },
             limit: parseInt(req.params.number),
             order: [['username', 'DESC']]
@@ -255,17 +282,13 @@ module.exports = function (app) {
 
     });
 
-    // app.get("/manymanytest",(req,res)=>{
-    //     db.User.findOne({
-    //         where:{
-    //             id: 3
-    //         },include:[
-    //             // db.Post,
-    //             {
-    //                 model:db.Post,
-    //                 as:"Bookmarked"
-    //             }
-    //         ]
+    // app.get("/api/users/:username", (req, res) => {
+    //     db.User.findAll({
+    //         where: {
+    //             UserId: req.params.username
+    //         },
+    //         limit: parseInt(req.params.usernumber),
+    //         order: [['username', 'DESC']]
     //     }).then(user=>{
     //         user.addBookmarked(4)
     //         res.json(user);
@@ -274,22 +297,6 @@ module.exports = function (app) {
     //         res.status(400).send("Bad request");
     //     });
     // })
-
-    app.get("/api/users/:username", (req, res) => {
-        db.User.findAll({
-            where: {
-                UserId: req.params.username
-            },
-            limit: parseInt(req.params.usernumber),
-            order: [['username', 'DESC']]
-        }).then(user=>{
-            user.addBookmarked(4)
-            res.json(user);
-        }).catch(err => {
-            console.log(err);
-            res.status(400).send("Bad request");
-        });
-    })
     
     app.get("/api/bookmark/all", (req, res) => {
         db.User.findOne({
