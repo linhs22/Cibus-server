@@ -3,56 +3,44 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.bulkInsert('Followers', [{
-        followerUserId: 1,
-        followerId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        followerUserId: 1,
-        followerId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        followerUserId: 1,
-        followerId: 4,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        followerUserId: 2,
         followerId: 1,
+        followingId: 2,
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        followerUserId: 2,
-        followerId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        followerUserId: 3,
-        followerId: 2,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        followerUserId: 4,
-        followerId: 3,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        followerUserId: 3,
-        followerId: 4,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        followerUserId: 4,
         followerId: 1,
+        followingId: 3,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        followerId: 1,
+        followingId: 4,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        followerId: 3,
+        followingId: 2,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        followerId: 4,
+        followingId: 3,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        followerId: 3,
+        followingId: 4,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        followerId: 4,
+        followingId: 1,
         createdAt: new Date(),
         updatedAt: new Date()
       },

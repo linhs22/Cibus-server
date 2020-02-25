@@ -60,6 +60,7 @@ module.exports = {
       
       
     ], {});
+    return null;
   },
 
   down: (queryInterface, Sequelize) => {

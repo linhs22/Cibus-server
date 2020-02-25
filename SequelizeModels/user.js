@@ -75,10 +75,11 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     // junction table with follower table
-    User.belongsToMany(models.User, { through: "Followers", as: 'followerUserId', foreignKey: "followerUserId" });
-    User.belongsToMany(models.User, { through: "Followers", as: 'followerId', foreignKey: "followerId" });
+    User.belongsToMany(models.User, { through: "Followers" , as: 'Follower',foreignKey:"followerId"});
+    User.belongsToMany(models.User, { through: "Followers", as: 'Following',foreignKey:"followingId"});
 
-    User.belongsToMany(models.Post, { through: "Bookmark" });
+    User.belongsToMany(models.Post, {as:"Bookmarked", through: "Bookmark"});
+    
 
   };
   return User;
