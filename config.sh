@@ -1,8 +1,8 @@
 #!/bin/bash
 # Run source ./config.sh to run this script file
 
-# export GOOGLE_APPLICATION_CREDENTIALS="C:\Users\Paolo\Documents\Keys\foodie-cibus-2020-095ca4477cb8.json"
-export GOOGLE_APPLICATION_CREDENTIALS="/Users/henrylin/Desktop/keys/foodie-cibus-2020-095ca4477cb8.json"
+export GOOGLE_APPLICATION_CREDENTIALS="C:\Users\Paolo\Documents\Keys\foodie-cibus-2020-095ca4477cb8.json"
+#export GOOGLE_APPLICATION_CREDENTIALS="/Users/henrylin/Desktop/keys/foodie-cibus-2020-095ca4477cb8.json"
 export GCLOUD_STORAGE_BUCKET_FOOD="foodie-cibus-bucket-1"
 export GCLOUD_STORAGE_BUCKET_PROFILE="foodie-cibus-bucket-2"
 export SQL_USER="root"

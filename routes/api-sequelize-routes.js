@@ -117,16 +117,27 @@ module.exports = function (app) {
 
     //Populate homepage
     app.get("/api/followers/:userid/:offset", (req, res) => {
-        db.Followers.findAll({
-            where: {
-                followerUserId: parseInt(req.params.userid)
-            }
+        db.User.findOne({
+            where:{
+                id: parseInt(req.params.userid)
+            },include:[
+                // db.Post,
+                {
+                    model:db.User,
+                    as:"Follower"
+                }
+            ]
         })
+        // db.Followers.findAll({
+        //     where: {
+        //         Follower: parseInt(req.params.userid)
+        //     }
+        // })
             .then(results => {
-                var followersArray = results.map(result => result.followerId);
+                var followersArray = results.Follower.map(result => result.dataValues.id);
                 db.Post.findAll({
                     offset: parseInt(req.params.offset),
-                    limit: 1,
+                    limit: 2,
                     where: {
                         UserId: followersArray
                     },
@@ -147,11 +158,12 @@ module.exports = function (app) {
 
     // Route to get all users
     app.get("/api/users/:username/:number", (req, res) => {
+        console.log(req.params)
         db.User.findAll({
             where: {
                 UserId: req.params.username
             },
-            limit: parseInt(req.params.usernumber),
+            limit: parseInt(req.params.number),
             order: [['username', 'DESC']]
         })
     })
