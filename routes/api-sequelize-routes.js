@@ -1,8 +1,13 @@
 var db = require("../SequelizeModels");
 const { format } = require('util');
 const Multer = require('multer');
+<<<<<<< HEAD
 const { Storage } = require('@google-cloud/storage');
 const { predictImage } = require("../API/clarifai-api");
+=======
+const {Storage} = require('@google-cloud/storage');
+const {predictImage} = require("../API/clarifai-api");
+>>>>>>> development
 const Op = db.Sequelize.Op;
 
 
@@ -116,6 +121,23 @@ module.exports = function (app) {
             });
     });
 
+    app.get("/api/myposts/:userid", (req, res) => {
+        db.Post.findAll({
+            where: {
+                UserId: req.params.userid
+            },
+            order: [['createdAt', 'DESC']]
+        })
+        .then(posts => {
+            console.log(posts)
+            res.json(posts)
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(400);
+            res.json(err);
+        });
+    });
 
     //Populate homepage
     app.get("/api/followers/:userid/:offset", (req, res) => {
@@ -130,33 +152,28 @@ module.exports = function (app) {
                 }
             ]
         })
-        // db.Followers.findAll({
-        //     where: {
-        //         Follower: parseInt(req.params.userid)
-        //     }
-        // })
-            .then(results => {
-                var followersArray = results.Follower.map(result => result.dataValues.id);
-                db.Post.findAll({
-                    offset: parseInt(req.params.offset),
-                    limit: 2,
-                    where: {
-                        UserId: followersArray
-                    },
-                    order: [['createdAt', 'DESC']],
-                    include: [{ model: db.User }, { model: db.Comment,
-                    include: [{model: db.User}] }]
+        .then(results => {
+            var followersArray = results.Follower.map(result => result.dataValues.id);
+            db.Post.findAll({
+                offset: parseInt(req.params.offset),
+                limit: 2,
+                where: {
+                    UserId: followersArray
+                },
+                order: [['createdAt', 'DESC']],
+                include: [{ model: db.User }, { model: db.Comment,
+                include: [{model: db.User}] }]
+            })
+                .then(results => {
+                    res.json(results);
                 })
-                    .then(results => {
-                        res.json(results);
-                    })
-                    .catch(err => {
-                        res.status(400).send(err);
-                    })
-            })
-            .catch(err => {
-                res.status(400).send(err);
-            })
+                .catch(err => {
+                    res.status(400).send(err);
+                })
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        })
     });
 
     
@@ -220,6 +237,32 @@ module.exports = function (app) {
                 res.json(err);
             });
     });
+
+    app.get("/searchpost/:search/:number", (req, res) => {
+        console.log("Hiease")
+        db.Post.findAll({
+            where: {
+                //description: {[Op.like]: `%${req.params.search}%`},
+                [Op.or]: [
+                    {
+                      description: {[Op.like]: `%${req.params.search}%`}
+                    },
+                    {
+                      recipe: {[Op.like]: `%${req.params.search}%`}
+                    }
+                  ]
+            },
+            limit: parseInt(req.params.number),
+            order: [['createdAt', 'DESC']]
+        })
+        .then(results=> {
+            console.log(results)
+            res.json(results);
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        })
+    })
 
     // Process the FOOD file upload and upload to Google Cloud Storage.
     app.post('/post/upload', multer.single('image'), (req, res, next) => {
