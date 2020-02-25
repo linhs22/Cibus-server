@@ -243,7 +243,43 @@ module.exports = function (app) {
 
     });
 
-    app.get("/manymanytest",(req,res)=>{
+    // app.get("/manymanytest",(req,res)=>{
+    //     db.User.findOne({
+    //         where:{
+    //             id: 3
+    //         },include:[
+    //             // db.Post,
+    //             {
+    //                 model:db.Post,
+    //                 as:"Bookmarked"
+    //             }
+    //         ]
+    //     }).then(user=>{
+    //         user.addBookmarked(4)
+    //         res.json(user);
+    //     }).catch(err => {
+    //         console.log(err);
+    //         res.status(400).send("Bad request");
+    //     });
+    // })
+
+    app.get("/api/users/:username", (req, res) => {
+        db.User.findAll({
+            where: {
+                UserId: req.params.username
+            },
+            limit: parseInt(req.params.usernumber),
+            order: [['username', 'DESC']]
+        }).then(user=>{
+            user.addBookmarked(4)
+            res.json(user);
+        }).catch(err => {
+            console.log(err);
+            res.status(400).send("Bad request");
+        });
+    })
+    
+    app.get("/api/bookmark/all", (req, res) => {
         db.User.findOne({
             where:{
                 id: 3
@@ -255,38 +291,61 @@ module.exports = function (app) {
                 }
             ]
         }).then(user=>{
-            
-            res.json(user);
-        })
+            res.json(user.Bookmarked);
+        }).catch(err => {
+            console.log(err);
+            res.status(400).send("Bad request");
+        });
     })
 
+    
     app.post("/api/bookmark/save", (req, res) => {
-        db.Post.create({
-            PostId: 2,
-            UserId: 3,
-            // PostId: req.body.postId,
-            // UserId: req.body.userId,
-
-          }).then(newBookmark => {
-            res.json(newBookmark);
-        })
-        .catch(err => {
+        db.User.findOne({
+            where:{
+                id: 3
+            }
+        }).then(user=>{
+            user.addBookmarked(4) 
+            res.json(user.Bookmarked);
+        }).catch(err => {
             console.log(err);
-            res.status(400);
-            res.json(err);
+            res.status(400).send("Bad request");
         });
+        
     });
-
-    app.get("/api/bookmark/all", (req, res) => {
-        db.User.findAll({
-            include:[db.Post]
-          }).then(newBookmark => {
-            res.json(newBookmark);
-        })
-        .catch(err => {
+    
+    
+    app.get("/api/followers/all", (req, res) => {
+        db.User.findOne({
+            where:{
+                id: 4
+            },include:[
+                // db.Post,
+                {
+                    model:db.User,
+                    as:"Follower"
+                }
+            ]
+        }).then(user=>{
+            res.json(user.Follower);
+        }).catch(err => {
             console.log(err);
-            res.status(400);
-            res.json(err);
+            res.status(400).send("Bad request");
+        });
+    })
+    
+
+    app.post("/api/followers/save", (req, res) => {
+        db.User.findOne({
+            where:{
+                id: 4
+            }
+        }).then(user=>{
+            user.addFollower(2) 
+            res.json(user);
+        }).catch(err => {
+            console.log(err);
+            res.status(400).send("Bad request");
         });
     })
 };
