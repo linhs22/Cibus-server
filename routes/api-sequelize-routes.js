@@ -3,6 +3,8 @@ const { format } = require('util');
 const Multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
 const { predictImage } = require("../API/clarifai-api");
+const Op = db.Sequelize.Op;
+
 
 // Multer is required to process file uploads and make them available via
 // req.files.
@@ -142,7 +144,8 @@ module.exports = function (app) {
                         UserId: followersArray
                     },
                     order: [['createdAt', 'DESC']],
-                    include: [{ model: db.User }]
+                    include: [{ model: db.User }, { model: db.Comment,
+                    include: [{model: db.User}] }]
                 })
                     .then(results => {
                         res.json(results);
@@ -175,7 +178,6 @@ module.exports = function (app) {
             order: [['createdAt', 'DESC']]
         })
         .then(results=> {
-            console.log(results)
             res.json(results);
         })
         .catch(err => {
@@ -192,6 +194,12 @@ module.exports = function (app) {
             },
             limit: parseInt(req.params.number),
             order: [['username', 'DESC']]
+        })
+        .then(results=> {
+            res.json(results);
+        })
+        .catch(err => {
+            res.status(400).send(err);
         })
     })
 
@@ -297,11 +305,29 @@ module.exports = function (app) {
     //         res.status(400).send("Bad request");
     //     });
     // })
+
+    app.get("/api/myposts/:userid", (req, res) => {
+        db.Post.findAll({
+            where: {
+                UserId: req.params.userid
+            },
+            order: [['createdAt', 'DESC']]
+        })
+        .then(posts => {
+            console.log(posts)
+            res.json(posts)
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(400);
+            res.json(err);
+        });
+    });
     
-    app.get("/api/bookmark/all", (req, res) => {
+    app.get("/api/bookmark/all/:userId", (req, res) => {
         db.User.findOne({
             where:{
-                id: 3
+                id: parseInt(req.params.userId)
             },include:[
                 // db.Post,
                 {
@@ -316,7 +342,6 @@ module.exports = function (app) {
             res.status(400).send("Bad request");
         });
     })
-
     
     app.post("/api/bookmark/save", (req, res) => {
         db.User.findOne({
