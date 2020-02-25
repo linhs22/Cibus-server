@@ -1,8 +1,13 @@
 var db = require("../SequelizeModels");
 const { format } = require('util');
 const Multer = require('multer');
+<<<<<<< HEAD
+const { Storage } = require('@google-cloud/storage');
+const { predictImage } = require("../API/clarifai-api");
+=======
 const {Storage} = require('@google-cloud/storage');
 const {predictImage} = require("../API/clarifai-api");
+>>>>>>> development
 const Op = db.Sequelize.Op;
 
 
@@ -136,49 +141,84 @@ module.exports = function (app) {
 
     //Populate homepage
     app.get("/api/followers/:userid/:offset", (req, res) => {
-        db.Followers.findAll({
-            where: {
-                followerUserId: parseInt(req.params.userid)
-            }
+        db.User.findOne({
+            where:{
+                id: parseInt(req.params.userid)
+            },include:[
+                // db.Post,
+                {
+                    model:db.User,
+                    as:"Follower"
+                }
+            ]
         })
         .then(results => {
-            var followersArray = results.map(result => result.followerId);
+            var followersArray = results.Follower.map(result => result.dataValues.id);
             db.Post.findAll({
                 offset: parseInt(req.params.offset),
-                limit:  2,
+                limit: 2,
                 where: {
                     UserId: followersArray
                 },
                 order: [['createdAt', 'DESC']],
-                include: [{model: db.User}, {model: db.Comment}]
+                include: [{ model: db.User }, { model: db.Comment,
+                include: [{model: db.User}] }]
             })
-            .then(results=> {
-                console.log(results)
-                res.json(results);
-            })
-            .catch(err => {
-                res.status(400).send(err);
-            })
-        });
+                .then(results => {
+                    res.json(results);
+                })
+                .catch(err => {
+                    res.status(400).send(err);
+                })
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        })
     });
 
-    // Route to get all users
-    app.get("/api/users/:username/:number", (req, res) => {
-        db.User.findAll({
+    
+    app.get("/searchpost/:search/:number", (req, res) => {
+        console.log("Hiease")
+        db.Post.findAll({
             where: {
-                UserId: req.params.username
+                //description: {[Op.like]: `%${req.params.search}%`},
+                [Op.or]: [
+                    {
+                      description: {[Op.like]: `%${req.params.search}%`}
+                    },
+                    {
+                      recipe: {[Op.like]: `%${req.params.search}%`}
+                    }
+                  ]
             },
-            limit: parseInt(req.params.usernumber),
-            order: [['username', 'DESC']]
+            limit: parseInt(req.params.number),
+            order: [['createdAt', 'DESC']]
         })
         .then(results=> {
-            console.log(results)
             res.json(results);
         })
         .catch(err => {
             res.status(400).send(err);
-        });
-    });
+        })
+    })
+
+    // Route to get all users
+    app.get("/api/users/:username/:number", (req, res) => {
+        console.log(req.params)
+        db.User.findAll({
+            where: {
+                username: {[Op.like]: `${req.params.username}%`}
+            },
+            limit: parseInt(req.params.number),
+            order: [['username', 'DESC']]
+        })
+        .then(results=> {
+            res.json(results);
+        })
+        .catch(err => {
+            res.status(400).send(err);
+        })
+    })
 
     // route to delete post
     app.delete("/post/:post", (req, res) => {
@@ -293,17 +333,13 @@ module.exports = function (app) {
 
     });
 
-    // app.get("/manymanytest",(req,res)=>{
-    //     db.User.findOne({
-    //         where:{
-    //             id: 3
-    //         },include:[
-    //             // db.Post,
-    //             {
-    //                 model:db.Post,
-    //                 as:"Bookmarked"
-    //             }
-    //         ]
+    // app.get("/api/users/:username", (req, res) => {
+    //     db.User.findAll({
+    //         where: {
+    //             UserId: req.params.username
+    //         },
+    //         limit: parseInt(req.params.usernumber),
+    //         order: [['username', 'DESC']]
     //     }).then(user=>{
     //         user.addBookmarked(4)
     //         res.json(user);
@@ -313,26 +349,28 @@ module.exports = function (app) {
     //     });
     // })
 
-    app.get("/api/users/:username", (req, res) => {
-        db.User.findAll({
+    app.get("/api/myposts/:userid", (req, res) => {
+        db.Post.findAll({
             where: {
-                UserId: req.params.username
+                UserId: req.params.userid
             },
-            limit: parseInt(req.params.usernumber),
-            order: [['username', 'DESC']]
-        }).then(user=>{
-            user.addBookmarked(4)
-            res.json(user);
-        }).catch(err => {
+            order: [['createdAt', 'DESC']]
+        })
+        .then(posts => {
+            console.log(posts)
+            res.json(posts)
+        })
+        .catch(err => {
             console.log(err);
-            res.status(400).send("Bad request");
+            res.status(400);
+            res.json(err);
         });
-    })
+    });
     
-    app.get("/api/bookmark/all", (req, res) => {
+    app.get("/api/bookmark/all/:userId", (req, res) => {
         db.User.findOne({
             where:{
-                id: 3
+                id: parseInt(req.params.userId)
             },include:[
                 // db.Post,
                 {
@@ -347,7 +385,6 @@ module.exports = function (app) {
             res.status(400).send("Bad request");
         });
     })
-
     
     app.post("/api/bookmark/save", (req, res) => {
         db.User.findOne({
