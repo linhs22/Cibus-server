@@ -5,7 +5,6 @@ const { Storage } = require('@google-cloud/storage');
 const { predictImage } = require("../API/clarifai-api");
 const Op = db.Sequelize.Op;
 
-
 // Multer is required to process file uploads and make them available via
 // req.files.
 const multer = Multer({
@@ -20,6 +19,7 @@ const storage = new Storage();
 // // A bucket is a container for objects (files).
 const bucketFood = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET_FOOD);
 const bucketProfile = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET_PROFILE);
+
 
 module.exports = function (app) {
 
@@ -121,7 +121,8 @@ module.exports = function (app) {
             where: {
                 UserId: req.params.userid
             },
-            order: [['createdAt', 'DESC']]
+            order: [['createdAt', 'DESC']],
+            include: [{model: db.Comment}]
         })
         .then(posts => {
             console.log(posts)
@@ -337,23 +338,6 @@ module.exports = function (app) {
     //     });
     // })
 
-    app.get("/api/myposts/:userid", (req, res) => {
-        db.Post.findAll({
-            where: {
-                UserId: req.params.userid
-            },
-            order: [['createdAt', 'DESC']]
-        })
-        .then(posts => {
-            console.log(posts)
-            res.json(posts)
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(400);
-            res.json(err);
-        });
-    });
     
     app.get("/api/bookmarkall/:userId", (req, res) => {
         console.log("Hello")
@@ -364,7 +348,9 @@ module.exports = function (app) {
                 // db.Post,
                 {
                     model:db.Post,
-                    as:"Bookmarked"
+                    as:"Bookmarked",
+                    include: [{model: db.Comment}]
+
                 }
             ]
         }).then(user=>{
@@ -374,8 +360,8 @@ module.exports = function (app) {
             console.log(err);
             res.status(400).send("Bad request");
         });
-    })
-    
+    });
+
     app.post("/api/bookmark/save", (req, res) => {
         db.User.findOne({
             where:{
@@ -412,13 +398,13 @@ module.exports = function (app) {
     })
     
 
-    app.post("/api/followers/save", (req, res) => {
+    app.post("/api/followers/save/:follower/:following", (req, res) => {
         db.User.findOne({
             where:{
-                id: 4
+                id: req.params.follower
             }
         }).then(user=>{
-            user.addFollower(2) 
+            user.addFollower(parseInt(req.params.following)) 
             res.json(user);
         }).catch(err => {
             console.log(err);
