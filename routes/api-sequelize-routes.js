@@ -5,7 +5,6 @@ const { Storage } = require('@google-cloud/storage');
 const { predictImage } = require("../API/clarifai-api");
 const Op = db.Sequelize.Op;
 
-
 // Multer is required to process file uploads and make them available via
 // req.files.
 const multer = Multer({
