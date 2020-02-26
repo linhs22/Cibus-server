@@ -25,7 +25,7 @@ module.exports = function (app) {
 
     //Route to check if user exist
     app.get("/api/auth/:username", (req, res) => {
-        console.log(req.params.username);
+        console.log("Deleted " + req.params.username);
         db.User.findOne({
             where: {
                 username: req.params.username
@@ -125,7 +125,6 @@ module.exports = function (app) {
             include: [{model: db.Comment}]
         })
         .then(posts => {
-            console.log(posts)
             res.json(posts)
         })
         .catch(err => {
@@ -175,7 +174,6 @@ module.exports = function (app) {
 
     
     app.get("/searchpost/:search/:number", (req, res) => {
-        console.log("Hiease")
         db.Post.findAll({
             where: {
                 [Op.or]: [
@@ -200,7 +198,6 @@ module.exports = function (app) {
 
     // Route to get all users
     app.get("/api/users/:username/:number", (req, res) => {
-        console.log(req.params)
         db.User.findAll({
             where: {
                 username: {[Op.like]: `${req.params.username}%`}
@@ -218,7 +215,6 @@ module.exports = function (app) {
 
     // route to delete post
     app.delete("/post/:post", (req, res) => {
-        console.log(req.params.post);
         db.Post.destroy({
             where: {
                 id: req.params.post
@@ -235,7 +231,6 @@ module.exports = function (app) {
     });
 
     app.get("/searchpost/:search/:number", (req, res) => {
-        console.log("Hiease")
         db.Post.findAll({
             where: {
                 //description: {[Op.like]: `%${req.params.search}%`},
@@ -252,7 +247,6 @@ module.exports = function (app) {
             order: [['createdAt', 'DESC']]
         })
         .then(results=> {
-            console.log(results)
             res.json(results);
         })
         .catch(err => {
@@ -299,7 +293,6 @@ module.exports = function (app) {
                                     imageUrl: publicUrl,
                                     postId: postId
                                 }
-                                console.log(results);
                                 res.status(200).send(results);
                             })
                             .catch(err => {
@@ -340,7 +333,6 @@ module.exports = function (app) {
 
     
     app.get("/api/bookmarkall/:userId", (req, res) => {
-        console.log("Hello")
         db.User.findOne({
             where:{
                 id: parseInt(req.params.userId)
@@ -354,7 +346,7 @@ module.exports = function (app) {
                 }
             ]
         }).then(user=>{
-            console.log(user.Bookmarked);
+            // console.log(user.Bookmarked);
             res.json(user.Bookmarked);
         }).catch(err => {
             console.log(err);
