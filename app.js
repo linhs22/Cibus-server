@@ -18,17 +18,17 @@ app.use(cors({
   credentials:true
 }));
 // app.use(cors({
-//   origin:["your deployed url"],
+//   origin:["http://cibusapp.herokuapp.com"],
 //   credentials:true
 // }));
 
-app.set('view engine', 'pug');
+//app.set('view engine', 'pug');
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Display a form for uploading files.
 app.get('/', (req, res) => {
-  res.render('form.pug');
+  res.send('Hello from App Engine!');
 });
 
 //Routes

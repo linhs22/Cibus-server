@@ -13,6 +13,24 @@ if (config.use_env_variable) {
 } else {
   var sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
+// var sequelize = new Sequelize("cibus_1", "root", "4c3Bccus7mwP4ei0", {
+//   dialect: 'mysql',
+//   // e.g. host: '/cloudsql/my-awesome-project:us-central1:my-cloud-sql-instance'
+//   host: '/cloudsql/foodie-cibus-2020:us-west2:cibus',
+//   pool: {
+//       max: 5,
+//       min: 0,
+//       acquire: 30000,
+//       idle: 10000
+//   },
+//   dialectOptions: {
+//       // e.g. socketPath: '/cloudsql/my-awesome-project:us-central1:my-cloud-sql-instance'
+//       // same as host string above
+//       socketPath: '/cloudsql/foodie-cibus-2020:us-west2:cibus'
+//   },
+//   logging: false,
+//   operatorsAliases: false
+// });
 
 fs
   .readdirSync(__dirname)

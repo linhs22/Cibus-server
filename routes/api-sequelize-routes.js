@@ -176,7 +176,6 @@ module.exports = function (app) {
         console.log("Hiease")
         db.Post.findAll({
             where: {
-                //description: {[Op.like]: `%${req.params.search}%`},
                 [Op.or]: [
                     {
                       description: {[Op.like]: `%${req.params.search}%`}
@@ -266,7 +265,6 @@ module.exports = function (app) {
             return;
         }
         // Create post in db to get id to reference
-        console.log("Hi!");
         db.Post.create(req.body)
             .then(postInfo => {
                 var postId = postInfo.dataValues.id;
@@ -293,23 +291,19 @@ module.exports = function (app) {
                                     id: postId
                                 }
                             })
-                                .then(() => {
-                                    var results = {
-                                        concepts: concepts,
-                                        imageUrl: publicUrl
-                                    }
-                                    //concepts.push({imageUrl: publicUrl});
-                                    console.log(results);
-                                    res.status(200).send(results);
-                                })
-                                .then(() => {
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                    res.status(400);
-                                    res.json(err);
-                                });
-
+                            .then(() => {
+                                let results = {
+                                    concepts: concepts,
+                                    imageUrl: publicUrl
+                                }
+                                console.log(results);
+                                res.status(200).send(results);
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                res.status(400);
+                                res.json(err);
+                            });
                         })
                         .catch(err => {
                             console.log(err);
@@ -323,9 +317,6 @@ module.exports = function (app) {
                 console.log(err);
                 res.status(400).send("Bad request");
             });
-
-
-
     });
 
     // app.get("/api/users/:username", (req, res) => {
