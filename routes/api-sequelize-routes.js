@@ -21,6 +21,7 @@ const storage = new Storage();
 const bucketFood = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET_FOOD);
 const bucketProfile = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET_PROFILE);
 
+
 module.exports = function (app) {
 
     //Route to check if user exist
