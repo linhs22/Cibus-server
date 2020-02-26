@@ -1,6 +1,8 @@
 var db = require("../SequelizeModels");
 const { format } = require('util');
 const Multer = require('multer');
+const { Storage } = require('@google-cloud/storage');
+const { predictImage } = require("../API/clarifai-api");
 const Op = db.Sequelize.Op;
 
 // Multer is required to process file uploads and make them available via
@@ -23,7 +25,7 @@ module.exports = function (app) {
 
     //Route to check if user exist
     app.get("/api/auth/:username", (req, res) => {
-        console.log(req.params.username);
+        console.log("Deleted " + req.params.username);
         db.User.findOne({
             where: {
                 username: req.params.username
@@ -123,7 +125,6 @@ module.exports = function (app) {
             include: [{model: db.Comment}]
         })
         .then(posts => {
-            console.log(posts)
             res.json(posts)
         })
         .catch(err => {
@@ -156,7 +157,8 @@ module.exports = function (app) {
                 },
                 order: [['createdAt', 'DESC']],
                 include: [{ model: db.User }, { model: db.Comment,
-                include: [{model: db.User}] }]
+                include: [{model: db.User}] 
+            }]
             })
                 .then(results => {
                     res.json(results);
@@ -172,10 +174,8 @@ module.exports = function (app) {
 
     
     app.get("/searchpost/:search/:number", (req, res) => {
-        console.log("Hiease")
         db.Post.findAll({
             where: {
-                //description: {[Op.like]: `%${req.params.search}%`},
                 [Op.or]: [
                     {
                       description: {[Op.like]: `%${req.params.search}%`}
@@ -198,7 +198,6 @@ module.exports = function (app) {
 
     // Route to get all users
     app.get("/api/users/:username/:number", (req, res) => {
-        console.log(req.params)
         db.User.findAll({
             where: {
                 username: {[Op.like]: `${req.params.username}%`}
@@ -216,7 +215,6 @@ module.exports = function (app) {
 
     // route to delete post
     app.delete("/post/:post", (req, res) => {
-        console.log(req.params.post);
         db.Post.destroy({
             where: {
                 id: req.params.post
@@ -233,7 +231,6 @@ module.exports = function (app) {
     });
 
     app.get("/searchpost/:search/:number", (req, res) => {
-        console.log("Hiease")
         db.Post.findAll({
             where: {
                 //description: {[Op.like]: `%${req.params.search}%`},
@@ -250,7 +247,6 @@ module.exports = function (app) {
             order: [['createdAt', 'DESC']]
         })
         .then(results=> {
-            console.log(results)
             res.json(results);
         })
         .catch(err => {
@@ -265,7 +261,6 @@ module.exports = function (app) {
             return;
         }
         // Create post in db to get id to reference
-        console.log("Hi!");
         db.Post.create(req.body)
             .then(postInfo => {
                 var postId = postInfo.dataValues.id;
@@ -292,23 +287,19 @@ module.exports = function (app) {
                                     id: postId
                                 }
                             })
-                                .then(() => {
-                                    var results = {
-                                        concepts: concepts,
-                                        imageUrl: publicUrl
-                                    }
-                                    //concepts.push({imageUrl: publicUrl});
-                                    console.log(results);
-                                    res.status(200).send(results);
-                                })
-                                .then(() => {
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                    res.status(400);
-                                    res.json(err);
-                                });
-
+                            .then(() => {
+                                let results = {
+                                    concepts: concepts,
+                                    imageUrl: publicUrl,
+                                    postId: postId
+                                }
+                                res.status(200).send(results);
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                res.status(400);
+                                res.json(err);
+                            });
                         })
                         .catch(err => {
                             console.log(err);
@@ -322,9 +313,6 @@ module.exports = function (app) {
                 console.log(err);
                 res.status(400).send("Bad request");
             });
-
-
-
     });
 
     // app.get("/api/users/:username", (req, res) => {
@@ -344,7 +332,7 @@ module.exports = function (app) {
     // })
 
     
-    app.get("/api/bookmark/all/:userId", (req, res) => {
+    app.get("/api/bookmarkall/:userId", (req, res) => {
         db.User.findOne({
             where:{
                 id: parseInt(req.params.userId)
@@ -358,6 +346,7 @@ module.exports = function (app) {
                 }
             ]
         }).then(user=>{
+            // console.log(user.Bookmarked);
             res.json(user.Bookmarked);
         }).catch(err => {
             console.log(err);

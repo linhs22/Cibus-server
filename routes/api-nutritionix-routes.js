@@ -75,9 +75,9 @@ module.exports = function (app) {
                         res.json({ dbingredient, nutrition });
                         db.Post.update(
                             {
-                                UserId:      req.body.UserId,
+                                UserId:      req.body.userId,
                                 description: req.body.description,
-                             //location: req.body.location, 
+                                location:    req.body.location, 
                                 recipe:      req.body.recipe
                             },                           
                             {where: { id: req.body.postId }
