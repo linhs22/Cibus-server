@@ -157,7 +157,8 @@ module.exports = function (app) {
                 },
                 order: [['createdAt', 'DESC']],
                 include: [{ model: db.User }, { model: db.Comment,
-                include: [{model: db.User}] }]
+                include: [{model: db.User}] 
+            }]
             })
                 .then(results => {
                     res.json(results);
@@ -294,7 +295,8 @@ module.exports = function (app) {
                             .then(() => {
                                 let results = {
                                     concepts: concepts,
-                                    imageUrl: publicUrl
+                                    imageUrl: publicUrl,
+                                    postId: postId
                                 }
                                 console.log(results);
                                 res.status(200).send(results);
@@ -353,7 +355,8 @@ module.exports = function (app) {
         });
     });
     
-    app.get("/api/bookmark/all/:userId", (req, res) => {
+    app.get("/api/bookmarkall/:userId", (req, res) => {
+        console.log("Hello")
         db.User.findOne({
             where:{
                 id: parseInt(req.params.userId)
@@ -365,6 +368,7 @@ module.exports = function (app) {
                 }
             ]
         }).then(user=>{
+            console.log(user.Bookmarked);
             res.json(user.Bookmarked);
         }).catch(err => {
             console.log(err);
