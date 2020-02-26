@@ -1,4 +1,5 @@
 var db = require("../SequelizeModels");
+const bcrypt = require("bcrypt");
 const { format } = require('util');
 const Multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
@@ -25,7 +26,7 @@ module.exports = function (app) {
 
     //Route to check if user exist
     app.get("/api/auth/:username", (req, res) => {
-        console.log("Deleted " + req.params.username);
+        console.log(req.params.username);
         db.User.findOne({
             where: {
                 username: req.params.username
@@ -41,9 +42,29 @@ module.exports = function (app) {
             });
     });
 
-    // Route to delet users
+    // Login
+    app.post("/api/auth/login", (req, res) => {
+        db.User.findOne({
+          where: {
+            name: req.body.name
+          }
+        }).then(dbUser=>{
+          if(bcrypt.compareSync(req.body.password,dbUser.password)){
+            req.session.user={
+              id:dbUser.id,
+              name:dbUser.name
+            }
+            res.json(req.session.user)
+          }
+          else{
+            res.status(401).json("not logged in")
+          }
+        })
+      })
+
+    // Route to delete users
     app.delete("/api/auth/:username", (req, res) => {
-        console.log(req.params.username);
+        console.log("Deleted " + req.params.username);
         db.User.destroy({
             where: {
                 username: req.params.username
@@ -95,6 +116,14 @@ module.exports = function (app) {
 
         blobStream.end(req.file.buffer);
     });
+
+    app.get('/api/auth/loggedinuser',(req,res)=>{
+        if(req.session.user){
+          res.json(req.session.user)
+        } else {
+          res.status(401).json("not logged in")
+        }
+      })
 
     // Route to get all posts from user
     app.get("/api/posts/:userid/:number", (req, res) => {
@@ -332,7 +361,7 @@ module.exports = function (app) {
     // })
 
     
-    app.get("/api/bookmarkall/:userId", (req, res) => {
+    app.get("/api/bookmark/all/:userId", (req, res) => {
         db.User.findOne({
             where:{
                 id: parseInt(req.params.userId)
