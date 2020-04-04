@@ -1,5 +1,5 @@
 # Cibus
-![cibuslabel](src/img/cibuslabel.PNG)
+
 ### A project by Paolo Torrado, Henry Lin, Liam Hayes, and Jack Sorensen
 ## Table of Contents
 [Description](#Description)
